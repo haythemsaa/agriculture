@@ -205,9 +205,10 @@
               <div class="space-y-2">
                 <button
                   v-if="order.status === 'delivered' && !order.has_review"
+                  @click="showReviewForm = !showReviewForm"
                   class="btn-primary w-full"
                 >
-                  ⭐ Laisser un avis
+                  {{ showReviewForm ? '❌ Annuler' : '⭐ Laisser un avis' }}
                 </button>
                 <button
                   v-if="canCancelOrder"
@@ -222,6 +223,15 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Review Form (after delivery) -->
+        <div v-if="order.status === 'delivered' && !order.has_review && showReviewForm" class="mt-6">
+          <ReviewForm
+            :order-id="order.id"
+            :on-cancel="() => showReviewForm = false"
+            @success="handleReviewSuccess"
+          />
         </div>
       </div>
 
@@ -246,6 +256,7 @@ const config = useRuntimeConfig()
 
 const order = ref<any>(null)
 const loading = ref(true)
+const showReviewForm = ref(false)
 
 const statusTimeline = computed(() => {
   if (!order.value) return []
@@ -351,6 +362,14 @@ const cancelOrder = async () => {
   } catch (error) {
     console.error('Failed to cancel order:', error)
     alert('Impossible d\'annuler la commande')
+  }
+}
+
+const handleReviewSuccess = (review: any) => {
+  showReviewForm.value = false
+  // Update order to reflect that it has a review
+  if (order.value) {
+    order.value.has_review = true
   }
 }
 

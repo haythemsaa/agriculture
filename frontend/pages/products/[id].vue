@@ -181,38 +181,11 @@
             </div>
 
             <!-- Reviews -->
-            <div class="card">
-              <h2 class="text-2xl font-bold mb-4">Avis clients</h2>
-
-              <div v-if="product.reviews && product.reviews.length > 0" class="space-y-4">
-                <div
-                  v-for="review in product.reviews"
-                  :key="review.id"
-                  class="border-b pb-4 last:border-0"
-                >
-                  <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center">
-                      <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                        {{ review.reviewer?.first_name?.[0] }}
-                      </div>
-                      <div>
-                        <p class="font-semibold">{{ review.reviewer?.first_name }} {{ review.reviewer?.last_name }}</p>
-                        <p class="text-sm text-gray-500">{{ new Date(review.created_at).toLocaleDateString('fr-FR') }}</p>
-                      </div>
-                    </div>
-                    <div class="flex items-center">
-                      <span class="text-yellow-500 mr-1">⭐</span>
-                      <span class="font-semibold">{{ review.rating }}/5</span>
-                    </div>
-                  </div>
-                  <p class="text-gray-600">{{ review.comment }}</p>
-                </div>
-              </div>
-
-              <p v-else class="text-gray-500 text-center py-8">
-                Aucun avis pour le moment. Soyez le premier à donner votre avis!
-              </p>
-            </div>
+            <ReviewsList
+              :reviews="reviews"
+              :stats="reviewStats"
+              :loading="reviewsLoading"
+            />
           </div>
 
           <!-- Sidebar -->
@@ -279,6 +252,9 @@ const similarProducts = ref<any[]>([])
 const loading = ref(true)
 const selectedImage = ref<string | null>(null)
 const quantity = ref(1)
+const reviews = ref<any[]>([])
+const reviewStats = ref<any>(null)
+const reviewsLoading = ref(false)
 
 // Fetch product
 const fetchProduct = async () => {
@@ -305,8 +281,23 @@ const addToCart = () => {
   }
 }
 
+// Fetch reviews
+const fetchReviews = async () => {
+  reviewsLoading.value = true
+  try {
+    const response = await $fetch(`${config.public.apiBase}/products/${route.params.id}/reviews`)
+    reviews.value = response.reviews?.data || []
+    reviewStats.value = response.stats || null
+  } catch (error) {
+    console.error('Failed to fetch reviews:', error)
+  } finally {
+    reviewsLoading.value = false
+  }
+}
+
 onMounted(() => {
   fetchProduct()
+  fetchReviews()
 })
 
 useHead({

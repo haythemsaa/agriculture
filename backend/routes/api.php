@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\WeatherController;
 use App\Http\Controllers\Api\FavoriteController;
+use App\Http\Controllers\Api\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,7 +58,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel']);
 
         // Reviews
-        Route::post('/orders/{id}/review', [OrderController::class, 'addReview']);
+        Route::post('/orders/{order}/review', [ReviewController::class, 'addOrderReview']);
+        Route::get('/products/{product}/reviews', [ReviewController::class, 'getProductReviews']);
+        Route::get('/agriculteurs/{agriculteurId}/reviews', [ReviewController::class, 'getAgriculteurReviews']);
+        Route::post('/reviews/{review}/respond', [ReviewController::class, 'respondToReview']);
 
         // Favorites
         Route::get('/favorites', [FavoriteController::class, 'index']);
