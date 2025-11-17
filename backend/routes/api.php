@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\WeatherController;
+use App\Http\Controllers\Api\FavoriteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +58,13 @@ Route::prefix('v1')->group(function () {
 
         // Reviews
         Route::post('/orders/{id}/review', [OrderController::class, 'addReview']);
+
+        // Favorites
+        Route::get('/favorites', [FavoriteController::class, 'index']);
+        Route::post('/favorites/{product}', [FavoriteController::class, 'store']);
+        Route::delete('/favorites/{product}', [FavoriteController::class, 'destroy']);
+        Route::post('/favorites/{product}/toggle', [FavoriteController::class, 'toggle']);
+        Route::get('/favorites/{product}/check', [FavoriteController::class, 'check']);
 
         // Messages (will be implemented with WebSocket)
         // Route::resource('conversations', ConversationController::class);

@@ -66,6 +66,16 @@ class User extends Authenticatable
         return $this->hasMany(AiRecommendation::class);
     }
 
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function favoriteProducts()
+    {
+        return $this->belongsToMany(Product::class, 'favorites')->withTimestamps();
+    }
+
     // Helper methods
     public function isAgriculteur(): bool
     {

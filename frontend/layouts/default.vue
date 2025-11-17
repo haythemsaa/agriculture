@@ -25,6 +25,14 @@
 
           <!-- Right side -->
           <div class="flex items-center space-x-4">
+            <!-- Favorites -->
+            <NuxtLink v-if="authStore.isAuthenticated" to="/favorites" class="relative hover:text-primary-600 transition" title="Mes favoris">
+              <span class="text-2xl">❤️</span>
+              <span v-if="favoritesStore.favoritesCount > 0" class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                {{ favoritesStore.favoritesCount }}
+              </span>
+            </NuxtLink>
+
             <!-- Cart -->
             <NuxtLink to="/cart" class="relative">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,13 +114,20 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
 import { useCartStore } from '~/stores/cart'
+import { useFavoritesStore } from '~/stores/favorites'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const favoritesStore = useFavoritesStore()
 
 // Initialize stores
 onMounted(() => {
   authStore.initAuth()
   cartStore.loadCart()
+
+  // Load favorites if user is authenticated
+  if (authStore.isAuthenticated) {
+    favoritesStore.fetchFavorites()
+  }
 })
 </script>

@@ -21,6 +21,11 @@
           AOC
         </span>
       </div>
+
+      <!-- Favorite Button -->
+      <div class="absolute top-2 right-2" @click.stop>
+        <FavoriteButton :product-id="product.id" />
+      </div>
     </div>
 
     <!-- Content -->

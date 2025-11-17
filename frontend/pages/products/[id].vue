@@ -159,9 +159,11 @@
                 >
                   🛒 Ajouter au panier
                 </button>
-                <button class="btn-secondary px-4">
-                  ❤️
-                </button>
+                <FavoriteButton
+                  :product-id="product.id"
+                  show-label
+                  button-class="btn-secondary px-6"
+                />
               </div>
             </div>
           </div>
