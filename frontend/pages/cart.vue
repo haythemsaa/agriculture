@@ -80,8 +80,9 @@
 
             <!-- Remove Button -->
             <button
-              @click="cartStore.removeItem(item.product_id)"
-              class="text-red-500 hover:text-red-700"
+              @click="confirmRemove(item)"
+              class="text-red-500 hover:text-red-700 transition"
+              title="Supprimer du panier"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -170,8 +171,12 @@
 
 <script setup lang="ts">
 import { useCartStore } from '~/stores/cart'
+import { useToast } from '~/composables/useToast'
+import { useSEO } from '~/composables/useSEO'
 
 const cartStore = useCartStore()
+const { toast } = useToast()
+const { setMeta } = useSEO()
 
 const promoCode = ref('')
 const discount = ref(0)
@@ -184,6 +189,31 @@ const deliveryFee = computed(() => {
 
 const total = computed(() => {
   return cartStore.subtotal + deliveryFee.value - discount.value
+})
+
+const confirmRemove = (item: any) => {
+  if (confirm(`Supprimer ${item.product.name_fr} du panier?`)) {
+    cartStore.removeItem(item.product_id)
+    toast.success('Produit supprimé du panier', item.product.name_fr)
+  }
+}
+
+// Watch quantity changes
+const updateQuantity = (productId: number, newQuantity: number, item: any) => {
+  cartStore.updateQuantity(productId, newQuantity)
+
+  if (newQuantity > item.quantity) {
+    toast.info('Quantité augmentée', `${newQuantity} ${item.product.unit}`)
+  } else {
+    toast.info('Quantité diminuée', `${newQuantity} ${item.product.unit}`)
+  }
+}
+
+// SEO
+setMeta({
+  title: 'Mon Panier',
+  description: 'Consultez et gérez les produits dans votre panier. Passez votre commande de produits frais locaux.',
+  keywords: ['panier', 'commande', 'checkout', 'agritech'],
 })
 
 onMounted(() => {

@@ -242,10 +242,15 @@
 
 <script setup lang="ts">
 import { useCartStore } from '~/stores/cart'
+import { useToast } from '~/composables/useToast'
+import { useSEO, useStructuredData } from '~/composables/useSEO'
 
 const route = useRoute()
 const config = useRuntimeConfig()
 const cartStore = useCartStore()
+const { toast } = useToast()
+const { setProductMeta } = useSEO()
+const { setProductSchema, setBreadcrumbSchema } = useStructuredData()
 
 const product = ref<any>(null)
 const similarProducts = ref<any[]>([])
@@ -264,11 +269,34 @@ const fetchProduct = async () => {
     quantity.value = product.value.minimum_order || 1
     selectedImage.value = product.value.images?.[0] || null
 
+    // Set SEO meta tags
+    if (product.value) {
+      setProductMeta({
+        name: product.value.name_fr,
+        description: product.value.description_fr || `${product.value.name_fr} - ${product.value.price_per_unit} TND/${product.value.unit}`,
+        price: product.value.price_per_unit,
+        image: product.value.images?.[0],
+        category: product.value.category?.name_fr,
+      })
+
+      // Set structured data
+      setProductSchema(product.value)
+
+      // Set breadcrumb
+      setBreadcrumbSchema([
+        { name: 'Accueil', url: config.public.siteUrl || 'https://agritech.tn' },
+        { name: 'Marketplace', url: `${config.public.siteUrl || 'https://agritech.tn'}/marketplace` },
+        { name: product.value.category?.name_fr || 'Produits', url: `${config.public.siteUrl || 'https://agritech.tn'}/marketplace?category=${product.value.category_id}` },
+        { name: product.value.name_fr, url: `${config.public.siteUrl || 'https://agritech.tn'}/products/${product.value.id}` },
+      ])
+    }
+
     // Fetch similar products
     const similarResponse = await $fetch(`${config.public.apiBase}/products/${route.params.id}/similar`)
     similarProducts.value = similarResponse.products || []
   } catch (error) {
     console.error('Failed to fetch product:', error)
+    toast.error('Impossible de charger le produit', 'Erreur')
   } finally {
     loading.value = false
   }
@@ -277,7 +305,10 @@ const fetchProduct = async () => {
 const addToCart = () => {
   if (product.value) {
     cartStore.addItem(product.value, quantity.value)
-    alert(`${quantity.value} ${product.value.unit} de ${product.value.name_fr} ajouté(s) au panier!`)
+    toast.success(
+      `${product.value.name_fr} ajouté au panier`,
+      `${quantity.value} ${product.value.unit}`
+    )
   }
 }
 
