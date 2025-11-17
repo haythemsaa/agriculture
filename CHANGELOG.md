@@ -2,6 +2,255 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.5.0] - 2025-11-17
+
+### 📱 PWA & Expérience d'Achat Avancée
+
+Cette version transforme l'application en Progressive Web App (PWA) installable et ajoute des fonctionnalités avancées de marketplace pour améliorer l'expérience utilisateur.
+
+#### 🚀 Progressive Web App (PWA)
+- ✅ **manifest.json** complet pour installation
+  - Nom, description, icônes multiples résolutions
+  - Couleurs thème (vert #059669)
+  - Mode standalone pour expérience app native
+  - Screenshots marketplace et produits
+  - Shortcuts vers pages principales
+  - Catégories: shopping, food, business
+- ✅ **Service Worker (sw.js)** pour fonctionnement offline
+  - Cache static assets (/, /marketplace, /offline)
+  - Stratégie Network First pour API
+  - Stratégie Cache First pour images
+  - Limite cache intelligente (50 dynamic, 60 images)
+  - Background sync pour panier et favoris
+  - Support push notifications
+  - Nettoyage automatique anciens caches
+- ✅ **Composable usePWA.ts** pour gestion PWA
+  - Enregistrement service worker automatique
+  - Détection installation possible
+  - Install prompt avec showInstallPrompt()
+  - Détection online/offline en temps réel
+  - Gestion mises à jour (updateAvailable)
+  - Push notifications (requestPermission, subscribe)
+  - Gestion cache (clearCaches, getCacheSize)
+  - Détection mode standalone
+- ✅ **Page offline.vue** élégante
+  - Design professionnel avec animations
+  - Status connexion temps réel
+  - Liste fonctionnalités disponibles offline
+  - Bouton réessayer avec feedback
+  - Conseils pour rétablir connexion
+  - Auto-redirect quand connexion rétablie
+
+**Fonctionnalités Offline:**
+- ✅ Consultation panier et favoris
+- ✅ Produits récemment consultés
+- ✅ Pages mises en cache
+- ✅ Navigation dans l'app
+- ❌ Achats (nécessite connexion)
+- ❌ Nouveaux produits (nécessite API)
+
+#### 🔍 Filtrage Avancé
+- ✅ **Composable useAdvancedFilters.ts** (500+ lignes)
+- ✅ **Filtres multiples:**
+  - Catégories (sélection multiple)
+  - Fourchette de prix (min/max)
+  - Régions (multi-sélection)
+  - Disponibilité (en stock/rupture/tous)
+  - Note minimum (1-5 étoiles)
+  - Certifications
+  - Produits bio uniquement
+  - Recherche texte
+- ✅ **Tri avancé:**
+  - Prix croissant/décroissant
+  - Nom A-Z/Z-A
+  - Plus récents
+  - Mieux notés
+  - Plus populaires
+- ✅ **Presets de filtres:**
+  - Les plus populaires
+  - Meilleur prix
+  - Bio uniquement
+  - Mieux notés
+  - Nouveautés
+- ✅ **Gestion presets personnalisés:**
+  - Créer preset depuis filtres actuels
+  - Sauvegarder dans localStorage
+  - Supprimer presets custom
+- ✅ **Compteur filtres actifs**
+- ✅ **Labels filtres actifs** pour affichage
+- ✅ **buildQueryParams()** pour API
+- ✅ **Persistance localStorage** automatique
+
+#### 👀 Produits Récemment Consultés
+- ✅ **Composable useRecentlyViewed.ts**
+- ✅ Tracking automatique consultation produits
+- ✅ Maximum 12 produits récents
+- ✅ Timestamp de visualisation
+- ✅ Persistance localStorage
+- ✅ Auto-nettoyage (>30 jours supprimés)
+- ✅ Filtrage par catégorie
+- ✅ Exclusion produit actuel
+- ✅ Formatage temps relatif ("il y a 2 heures")
+- ✅ Gestion ajout/suppression/clear
+
+#### ⚡ Vue Rapide Produit
+- ✅ **Composant ProductQuickView.vue**
+- ✅ Modal overlay plein écran
+- ✅ **Galerie images:**
+  - Image principale grande taille
+  - Thumbnails cliquables
+  - Sélection image active
+  - Lazy loading images
+- ✅ **Informations produit:**
+  - Titre, catégorie, prix
+  - Notation avec étoiles
+  - Description (4 lignes max)
+  - Stock et disponibilité
+  - Badges (Bio, Certifié, Nouveau)
+- ✅ **Actions:**
+  - Sélecteur quantité (−/input/+)
+  - Ajouter au panier avec toast
+  - Toggle favoris avec icône cœur
+  - Lien vers page complète
+- ✅ **UX:**
+  - Fermeture Escape et click outside
+  - Animations slide-up
+  - Keyboard navigation
+  - Focus trap accessible
+  - Responsive mobile
+
+#### 🔄 Comparaison de Produits
+- ✅ **Composable useProductComparison.ts**
+- ✅ Comparer jusqu'à 4 produits côte-à-côte
+- ✅ **Gestion comparaison:**
+  - addProduct() avec vérification limite
+  - removeProduct() par ID
+  - clearAll() réinitialisation
+  - isInComparison() vérification
+- ✅ **Panel comparaison:**
+  - toggleComparison() ouverture/fermeture
+  - Persistance localStorage
+  - Auto-fermeture si vide
+- ✅ **Statistiques intelligentes:**
+  - Prix min/max/moyen
+  - Meilleure note
+  - Nombre produits bio
+  - Nombre en stock
+- ✅ **Recommandations:**
+  - getBestValue() (ratio note/prix)
+  - getCheapest() moins cher
+  - getBestRated() mieux noté
+- ✅ **Export:**
+  - exportAsCSV() génération CSV
+  - downloadCSV() téléchargement fichier
+  - Colonnes: nom, prix, stock, note, bio, catégorie
+
+#### 📤 Partage Social
+- ✅ **Composant SocialShare.vue**
+- ✅ **Plateformes supportées:**
+  - Facebook (avec URL)
+  - Twitter/X (avec texte)
+  - WhatsApp (avec message)
+  - LinkedIn (professionnel)
+  - Email (mailto avec sujet/body)
+  - Copier lien (clipboard API)
+- ✅ **Dropdown élégant:**
+  - Icônes couleur marque
+  - Animations dropdown
+  - Fermeture click-outside
+  - Escape pour fermer
+- ✅ **Props configurables:**
+  - URL, titre, description, image
+  - Label bouton et aria-label
+  - Affichage label optionnel
+- ✅ **Fonctionnalités:**
+  - Fenêtre popup pour partages
+  - Toast succès copie lien
+  - Support Web Share API native
+  - Icons branded (couleurs officielles)
+
+### 📊 Métriques Version 1.5.0
+- **Fichiers créés:** 9 nouveaux composants/composables/pages
+- **Lignes de code:** ~2,500
+- **PWA:** Installable sur iOS et Android
+- **Offline:** Support complet avec cache
+- **Filtres:** 9 types de filtres + 5 presets
+- **Comparaison:** Jusqu'à 4 produits
+- **Partage:** 6 plateformes sociales
+
+### 🎯 Impact Utilisateur
+
+**Installation & Offline:**
+- ✅ App installable sur écran d'accueil
+- ✅ Fonctionne sans connexion (partiel)
+- ✅ Chargement instantané (cache)
+- ✅ Notifications push prêtes
+- ✅ Updates automatiques
+
+**Expérience Shopping:**
+- ✅ Filtrage précis et rapide
+- ✅ Vue rapide sans quitter liste
+- ✅ Historique consultation automatique
+- ✅ Comparaison intelligente multi-produits
+- ✅ Partage facile sur réseaux sociaux
+
+**Performance:**
+- ✅ Cache intelligent (assets, images, API)
+- ✅ Chargement progressif
+- ✅ Offline fallback gracieux
+- ✅ Background sync panier/favoris
+
+### 🚀 Nouvelles Fonctionnalités en Action
+
+**Installation PWA:**
+```typescript
+const { showInstallPrompt, isInstallable } = usePWA()
+
+// Afficher prompt installation
+if (isInstallable.value) {
+  await showInstallPrompt()
+}
+```
+
+**Filtrage Avancé:**
+```typescript
+const { filters, applyPreset, buildQueryParams } = useAdvancedFilters()
+
+// Appliquer preset
+applyPreset('organic') // Produits bio uniquement
+
+// Construire query API
+const params = buildQueryParams()
+// { organic: 1, sort_by: 'newest', availability: 'in_stock' }
+```
+
+**Comparaison Produits:**
+```typescript
+const { addProduct, getBestValue, downloadCSV } = useProductComparison()
+
+// Ajouter produit
+addProduct(product)
+
+// Obtenir meilleur rapport qualité/prix
+const best = getBestValue()
+
+// Exporter comparaison
+downloadCSV()
+```
+
+**Récemment Consultés:**
+```typescript
+const { addProduct, recentProducts } = useRecentlyViewed()
+
+// Tracker consultation
+addProduct(product)
+
+// Afficher récents (max 12)
+recentProducts.value.forEach(p => console.log(p.name_fr))
+```
+
+---
+
 ## [1.4.0] - 2025-11-17
 
 ### 🛡️ Production Ready - Accessibilité & Performance
