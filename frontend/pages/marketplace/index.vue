@@ -95,13 +95,13 @@
             </select>
           </div>
 
-          <!-- Loading -->
-          <div v-if="productsStore.loading" class="text-center py-12">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          <!-- Loading Skeletons -->
+          <div v-if="productsStore.loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <SkeletonCard v-for="i in 6" :key="i" />
           </div>
 
           <!-- Products -->
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-else-if="productsStore.products.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <ProductCard
               v-for="product in productsStore.products"
               :key="product.id"
@@ -109,21 +109,23 @@
             />
           </div>
 
-          <!-- Pagination -->
-          <div v-if="productsStore.pagination.last_page > 1" class="mt-8 flex justify-center gap-2">
-            <button
-              v-for="page in productsStore.pagination.last_page"
-              :key="page"
-              @click="productsStore.fetchProducts(page)"
-              :class="[
-                'px-4 py-2 rounded-lg',
-                page === productsStore.pagination.current_page
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-white hover:bg-gray-100'
-              ]"
-            >
-              {{ page }}
+          <!-- Empty State -->
+          <div v-else class="text-center py-20">
+            <div class="text-6xl mb-4">🔍</div>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-2">Aucun produit trouvé</h3>
+            <p class="text-gray-600 mb-6">Essayez de modifier vos filtres ou votre recherche</p>
+            <button @click="productsStore.resetFilters()" class="btn-primary">
+              Réinitialiser les filtres
             </button>
+          </div>
+
+          <!-- Pagination -->
+          <div v-if="!productsStore.loading" class="mt-8">
+            <PaginationNav
+              :current-page="productsStore.pagination.current_page"
+              :total-pages="productsStore.pagination.last_page"
+              @change="productsStore.fetchProducts"
+            />
           </div>
         </div>
       </div>
@@ -133,12 +135,21 @@
 
 <script setup lang="ts">
 import { useProductsStore } from '~/stores/products'
+import { useSEO } from '~/composables/useSEO'
 
 const productsStore = useProductsStore()
+const { setMeta } = useSEO()
 
 onMounted(async () => {
   await productsStore.fetchCategories()
   await productsStore.fetchProducts()
+})
+
+// SEO
+setMeta({
+  title: 'Marketplace Agricole',
+  description: 'Découvrez des produits frais directement des agriculteurs tunisiens. Fruits, légumes, huile d\'olive, dattes, miel et plus encore.',
+  keywords: ['marketplace', 'agriculture', 'produits frais', 'bio', 'tunisia', 'agriculteur'],
 })
 
 useHead({

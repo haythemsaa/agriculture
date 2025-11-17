@@ -9,11 +9,6 @@
 
       <div class="card">
         <form @submit.prevent="handleLogin" class="space-y-6">
-          <!-- Error Alert -->
-          <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {{ error }}
-          </div>
-
           <!-- Email -->
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
@@ -24,9 +19,13 @@
               v-model="form.email"
               type="email"
               required
-              class="input-field"
+              :class="['input-field', hasError('email') && 'border-red-500']"
               placeholder="votre@email.com"
+              @blur="validateSingle('email', form.email, { required: true, email: true })"
             />
+            <p v-if="hasError('email')" class="text-red-500 text-sm mt-1">
+              {{ getError('email') }}
+            </p>
           </div>
 
           <!-- Password -->
@@ -39,9 +38,13 @@
               v-model="form.password"
               type="password"
               required
-              class="input-field"
+              :class="['input-field', hasError('password') && 'border-red-500']"
               placeholder="••••••••"
+              @blur="validateSingle('password', form.password, { required: true, minLength: 6 })"
             />
+            <p v-if="hasError('password')" class="text-red-500 text-sm mt-1">
+              {{ getError('password') }}
+            </p>
           </div>
 
           <!-- Remember & Forgot -->
@@ -94,9 +97,15 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
+import { useFormValidation } from '~/composables/useFormValidation'
+import { useToast } from '~/composables/useToast'
+import { useSEO } from '~/composables/useSEO'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const { toast } = useToast()
+const { validate, validateSingle, hasError, getError, clearErrors } = useFormValidation()
+const { setMeta } = useSEO()
 
 const form = reactive({
   email: '',
@@ -104,32 +113,52 @@ const form = reactive({
 })
 
 const loading = ref(false)
-const error = ref('')
 
 const handleLogin = async () => {
+  // Validate form
+  const isValid = validate(form, {
+    email: { required: true, email: true },
+    password: { required: true, minLength: 6 },
+  })
+
+  if (!isValid) {
+    toast.error('Veuillez corriger les erreurs du formulaire')
+    return
+  }
+
   loading.value = true
-  error.value = ''
+  clearErrors()
 
   try {
     await authStore.login(form.email, form.password)
 
+    toast.success('Connexion réussie!', 'Bienvenue')
+
     // Redirect based on role
-    if (authStore.isAgriculteur) {
-      router.push('/dashboard/agriculteur')
-    } else if (authStore.isAcheteur) {
-      router.push('/marketplace')
-    } else {
-      router.push('/dashboard')
-    }
+    setTimeout(() => {
+      if (authStore.isAgriculteur) {
+        router.push('/dashboard/agriculteur')
+      } else if (authStore.isAcheteur) {
+        router.push('/marketplace')
+      } else {
+        router.push('/dashboard')
+      }
+    }, 500)
   } catch (err: any) {
-    error.value = err.response?.data?.error || 'Erreur de connexion. Vérifiez vos identifiants.'
+    toast.error(
+      err.response?.data?.error || 'Erreur de connexion. Vérifiez vos identifiants.',
+      'Erreur de connexion'
+    )
   } finally {
     loading.value = false
   }
 }
 
-useHead({
+// SEO
+setMeta({
   title: 'Connexion',
+  description: 'Connectez-vous à votre compte AgriTech Tunisia pour accéder à vos commandes, produits et plus encore.',
+  keywords: ['connexion', 'login', 'agritech', 'tunisia'],
 })
 
 // Redirect if already logged in

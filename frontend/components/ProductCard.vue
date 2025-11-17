@@ -79,16 +79,18 @@
 
 <script setup lang="ts">
 import { useCartStore } from '~/stores/cart'
+import { useToast } from '~/composables/useToast'
 
 const props = defineProps<{
   product: any
 }>()
 
 const cartStore = useCartStore()
+const { toast } = useToast()
 
 const addToCart = () => {
-  cartStore.addItem(props.product, props.product.minimum_order || 1)
-  // Show notification (you can add a toast library)
-  alert(`${props.product.name_fr} ajouté au panier!`)
+  const quantity = props.product.minimum_order || 1
+  cartStore.addItem(props.product, quantity)
+  toast.success(`${props.product.name_fr} ajouté au panier!`, `${quantity} ${props.product.unit}`)
 }
 </script>

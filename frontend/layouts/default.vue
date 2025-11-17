@@ -108,6 +108,9 @@
         </div>
       </div>
     </footer>
+
+    <!-- Toast Notifications -->
+    <Toast ref="toastRef" />
   </div>
 </template>
 
@@ -115,10 +118,13 @@
 import { useAuthStore } from '~/stores/auth'
 import { useCartStore } from '~/stores/cart'
 import { useFavoritesStore } from '~/stores/favorites'
+import { useToast } from '~/composables/useToast'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const favoritesStore = useFavoritesStore()
+const { setToastInstance } = useToast()
+const toastRef = ref(null)
 
 // Initialize stores
 onMounted(() => {
@@ -128,6 +134,11 @@ onMounted(() => {
   // Load favorites if user is authenticated
   if (authStore.isAuthenticated) {
     favoritesStore.fetchFavorites()
+  }
+
+  // Initialize toast
+  if (toastRef.value) {
+    setToastInstance(toastRef.value)
   }
 })
 </script>
