@@ -1,8 +1,11 @@
 <template>
-  <div class="min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-      <nav class="container mx-auto px-4 py-4">
+  <ErrorBoundary>
+    <SkipNavigation />
+
+    <div class="min-h-screen flex flex-col">
+      <!-- Header -->
+      <header class="bg-white shadow-sm sticky top-0 z-50 mobile-header safe-top" role="banner">
+        <nav id="main-navigation" class="container mx-auto px-4 py-4" role="navigation" aria-label="Navigation principale">
         <div class="flex items-center justify-between">
           <!-- Logo -->
           <NuxtLink to="/" class="flex items-center space-x-2">
@@ -11,14 +14,29 @@
           </NuxtLink>
 
           <!-- Navigation -->
-          <div class="hidden md:flex items-center space-x-6">
-            <NuxtLink to="/marketplace" class="hover:text-primary-600 transition">
+          <div class="hidden md:flex items-center space-x-6" role="menubar">
+            <NuxtLink
+              to="/marketplace"
+              class="hover:text-primary-600 transition"
+              role="menuitem"
+              aria-label="Accéder au marketplace"
+            >
               Marketplace
             </NuxtLink>
-            <NuxtLink to="/about" class="hover:text-primary-600 transition">
+            <NuxtLink
+              to="/about"
+              class="hover:text-primary-600 transition"
+              role="menuitem"
+              aria-label="À propos de nous"
+            >
               À propos
             </NuxtLink>
-            <NuxtLink to="/weather" class="hover:text-primary-600 transition">
+            <NuxtLink
+              to="/weather"
+              class="hover:text-primary-600 transition"
+              role="menuitem"
+              aria-label="Consulter la météo"
+            >
               Météo
             </NuxtLink>
           </div>
@@ -26,19 +44,38 @@
           <!-- Right side -->
           <div class="flex items-center space-x-4">
             <!-- Favorites -->
-            <NuxtLink v-if="authStore.isAuthenticated" to="/favorites" class="relative hover:text-primary-600 transition" title="Mes favoris">
-              <span class="text-2xl">❤️</span>
-              <span v-if="favoritesStore.favoritesCount > 0" class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+            <NuxtLink
+              v-if="authStore.isAuthenticated"
+              to="/favorites"
+              class="relative hover:text-primary-600 transition touchable"
+              aria-label="Mes favoris"
+              :aria-description="favoritesStore.favoritesCount > 0 ? `${favoritesStore.favoritesCount} produits favoris` : 'Aucun favori'"
+            >
+              <span class="text-2xl" aria-hidden="true">❤️</span>
+              <span
+                v-if="favoritesStore.favoritesCount > 0"
+                class="absolute -top-2 -right-2 bg-primary-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                aria-hidden="true"
+              >
                 {{ favoritesStore.favoritesCount }}
               </span>
             </NuxtLink>
 
             <!-- Cart -->
-            <NuxtLink to="/cart" class="relative">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <NuxtLink
+              to="/cart"
+              class="relative touchable"
+              aria-label="Panier"
+              :aria-description="cartStore.itemCount > 0 ? `${cartStore.itemCount} articles dans le panier` : 'Panier vide'"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <span v-if="cartStore.itemCount > 0" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+              <span
+                v-if="cartStore.itemCount > 0"
+                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                aria-hidden="true"
+              >
                 {{ cartStore.itemCount }}
               </span>
             </NuxtLink>
@@ -67,14 +104,14 @@
       </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow">
-      <slot />
-    </main>
+      <!-- Main Content -->
+      <main id="main-content" class="flex-grow with-bottom-nav safe-bottom" role="main" tabindex="-1">
+        <slot />
+      </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12">
-      <div class="container mx-auto px-4">
+      <!-- Footer -->
+      <footer class="bg-gray-800 text-white py-12" role="contentinfo">
+        <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 class="text-xl font-bold mb-4">AgriTech Tunisia</h3>
@@ -109,9 +146,10 @@
       </div>
     </footer>
 
-    <!-- Toast Notifications -->
-    <Toast ref="toastRef" />
-  </div>
+      <!-- Toast Notifications -->
+      <Toast ref="toastRef" />
+    </div>
+  </ErrorBoundary>
 </template>
 
 <script setup lang="ts">
@@ -119,11 +157,13 @@ import { useAuthStore } from '~/stores/auth'
 import { useCartStore } from '~/stores/cart'
 import { useFavoritesStore } from '~/stores/favorites'
 import { useToast } from '~/composables/useToast'
+import { usePerformance } from '~/composables/usePerformance'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const favoritesStore = useFavoritesStore()
 const { setToastInstance } = useToast()
+const { measurePageLoad } = usePerformance()
 const toastRef = ref(null)
 
 // Initialize stores
@@ -140,5 +180,8 @@ onMounted(() => {
   if (toastRef.value) {
     setToastInstance(toastRef.value)
   }
+
+  // Start performance monitoring
+  measurePageLoad()
 })
 </script>
