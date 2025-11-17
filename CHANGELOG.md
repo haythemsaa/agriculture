@@ -2,6 +2,179 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.1.0] - 2025-11-17
+
+### 🚀 Nouvelles Fonctionnalités Majeures
+
+#### ⭐ Système de Favoris / Wishlist
+- ✅ Migration et modèle Favorite avec contraintes uniques
+- ✅ API complète (ajouter, retirer, toggle, vérifier)
+- ✅ FavoriteController avec gestion des favoris
+- ✅ Pinia store pour state management des favoris
+- ✅ Page dédiée aux favoris avec grid responsive
+- ✅ Composant FavoriteButton réutilisable
+- ✅ Intégration dans ProductCard (coin supérieur droit)
+- ✅ Intégration dans détails produit (avec label)
+- ✅ Badge de compteur dans la navigation
+- ✅ Chargement automatique au montage de l'app
+
+#### 💬 Système d'Avis et Notations
+- ✅ ReviewController avec gestion complète
+  - addOrderReview: Soumission d'avis pour commandes livrées
+  - getProductReviews: Récupération avec stats et distribution
+  - getAgriculteurReviews: Liste des avis pour un agriculteur
+  - respondToReview: Réponses des vendeurs aux avis
+- ✅ Mise à jour automatique des ratings (produits et agriculteurs)
+- ✅ Distribution des notes (1-5 étoiles)
+- ✅ Composant ReviewForm
+  - Sélecteur d'étoiles avec labels descriptifs
+  - Zone de commentaire (1000 caractères max)
+  - Support images (préparé)
+  - Gestion succès/erreurs
+- ✅ Composant ReviewsList
+  - Résumé de notation avec étoiles visuelles
+  - Barres de distribution des notes
+  - Cartes individuelles d'avis avec:
+    - Badge "Achat vérifié"
+    - Affichage des étoiles
+    - Support galerie d'images
+    - Réponses des vendeurs
+  - États de chargement et vide
+- ✅ Intégration dans page produit
+- ✅ Formulaire d'avis dans détails de commande
+- ✅ Prévention des avis multiples
+- ✅ Vérification automatique des achats
+
+#### 🎯 Dashboard Admin
+- ✅ Vue d'ensemble complète avec métriques clés
+  - Utilisateurs totaux et nouveaux du mois
+  - Revenus mensuels avec croissance
+  - Commandes actives et en attente
+  - Produits actifs et ruptures de stock
+- ✅ Graphique d'évolution des revenus (7 mois)
+- ✅ Répartition des commandes par statut
+- ✅ Liste des commandes récentes
+- ✅ Produits populaires avec ventes et notes
+- ✅ Section actions requises
+  - Vérifications en attente
+  - Litiges à résoudre
+  - Signalements à examiner
+- ✅ Design responsive avec dégradés
+
+#### 🗄️ Seeders de Données
+- ✅ OrderSeeder complet avec 8 commandes réalistes
+  - Différents statuts (pending → delivered, cancelled)
+  - Plusieurs items par commande
+  - Calcul automatique des commissions
+  - Calcul des frais de livraison
+  - Historique de statut avec timestamps
+  - Mise à jour des statistiques acheteur
+  - Adresses de livraison réalistes
+
+#### 🚨 Pages d'Erreur
+- ✅ error.vue global pour tous les types d'erreurs
+  - Messages personnalisés (404, 500, 403, 401, 400)
+  - Icônes visuelles selon le code d'erreur
+  - Stack trace en mode développement
+  - Actions de récupération (réessayer, navigation)
+  - Liens d'aide et navigation rapide
+  - Suggestions pour erreurs 404
+- ✅ Page 404 personnalisée ([...slug].vue)
+  - Thème agricole avec icône blé
+  - Recherche de produits intégrée
+  - Liens rapides vers sections principales
+  - Suggestions de catégories populaires
+  - CTA vers support
+  - Design mobile-responsive
+
+#### 🛠️ Scripts de Déploiement
+- ✅ **deploy.sh** - Déploiement automatisé complet
+  - Backup automatique avant déploiement
+  - Pull du code depuis Git
+  - Rebuild des conteneurs Docker
+  - Installation des dépendances (backend & frontend)
+  - Migrations de base de données
+  - Optimisation des caches Laravel
+  - Build de production frontend
+  - Health checks (backend & frontend)
+  - Rapport de déploiement détaillé
+
+- ✅ **backup.sh** - Système de sauvegarde
+  - Dump PostgreSQL (agritech_db + all)
+  - Dump MongoDB avec compression gzip
+  - Snapshot Redis
+  - Archive compressée (.tar.gz)
+  - Nettoyage automatique (rétention 30 jours)
+  - Rapport de taille
+  - Liste des backups récents
+
+- ✅ **restore.sh** - Restauration de base de données
+  - Confirmation interactive
+  - Restauration PostgreSQL (drop/create)
+  - Restauration MongoDB (avec --drop)
+  - Restauration Redis
+  - Migration automatique après restore
+  - Nettoyage des fichiers temporaires
+  - Vérifications de sécurité
+
+- ✅ **setup.sh** - Configuration initiale
+  - Vérification des prérequis (Docker, Docker Compose)
+  - Génération des fichiers .env
+  - Création de la structure de répertoires
+  - Build et démarrage des conteneurs
+  - Installation des dépendances
+  - Migrations de base de données
+  - Seeding des données (mode dev)
+  - Création du symlink storage
+  - Configuration des permissions
+  - Health checks de validation
+  - Affichage des credentials de test
+
+- ✅ **monitor.sh** - Monitoring système
+  - Statut des conteneurs Docker
+  - Health checks des services
+  - Tests de connexion bases de données
+  - Monitoring des ressources (CPU, mémoire)
+  - Rapport d'utilisation disque
+  - Agrégation des logs d'erreur
+  - Affichage de l'uptime
+  - Dashboard temps réel
+
+#### 📝 Améliorations Backend
+- ✅ Routes API pour favoris et reviews
+- ✅ Relation favoriteProducts dans User model
+- ✅ Calculs automatiques des ratings moyens
+- ✅ Gestion des réponses aux avis
+- ✅ Validation stricte des données
+- ✅ Messages d'erreur en français
+
+#### 🎨 Améliorations Frontend
+- ✅ Composants réutilisables (FavoriteButton, ReviewForm, ReviewsList)
+- ✅ États de chargement et erreurs
+- ✅ Messages de succès temporisés
+- ✅ Design cohérent avec le système
+- ✅ Optimisation mobile
+- ✅ Feedback utilisateur amélioré
+
+#### 🔧 Améliorations Techniques
+- ✅ Scripts bash avec gestion d'erreurs (set -e)
+- ✅ Sortie colorée pour meilleure lisibilité
+- ✅ Prompts interactifs pour sécurité
+- ✅ Support modes production/développement
+- ✅ Gestion automatique de la rétention
+- ✅ Validation de santé système
+- ✅ Indicateurs de progression étape par étape
+
+### 📊 Métriques Cette Version
+- **Fichiers ajoutés:** 20+
+- **Lignes de code:** ~4,000
+- **Commits:** 6 structurés
+- **Scripts:** 5 automatisés
+- **Composants:** 3 réutilisables
+- **Pages:** 2 nouvelles
+
+---
+
 ## [1.0.0] - 2025-11-17
 
 ### 🎉 MVP Complet - Version Initiale
