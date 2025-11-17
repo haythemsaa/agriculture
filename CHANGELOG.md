@@ -2,6 +2,231 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.6.0] - 2025-11-17
+
+### 🎯 Engagement Utilisateur & Intelligence
+
+Cette version ajoute des fonctionnalités avancées d'engagement utilisateur avec notifications en temps réel, recommandations intelligentes, listes de souhaits multiples, et alertes de prix.
+
+#### 🔔 Système de Notifications en Temps Réel
+- ✅ **Composable useNotifications.ts** (400+ lignes)
+- ✅ **8 types de notifications:**
+  - Info, Success, Warning, Error
+  - Promotion, Order, Price Drop, Stock Alert
+- ✅ **Gestion complète:**
+  - addNotification() avec priorité (low/medium/high)
+  - markAsRead() / markAllAsRead()
+  - removeNotification() / clearAll() / clearRead()
+  - Filtrage par type, priorité, statut
+  - Compteur non lus en temps réel
+- ✅ **Notifications helpers:**
+  - notifyOrderUpdate() - Mises à jour commandes
+  - notifyPriceDrop() - Baisse de prix
+  - notifyStockAlert() - Retour en stock
+  - notifyPromotion() - Promotions spéciales
+- ✅ **Browser notifications:**
+  - requestPermission() - Demande permission
+  - showBrowserNotification() - Affichage natif
+  - Support requireInteraction pour priorité haute
+- ✅ **Persistance localStorage (30 jours)**
+- ✅ **Max 50 notifications** avec auto-cleanup
+
+**Composant NotificationBell.vue:**
+- 🔔 Badge unread count animé (pulse)
+- 📋 Dropdown élégant avec tabs (Toutes/Non lues)
+- ⚙️ Panneau paramètres (browser notifs, sons)
+- 🎨 Icônes colorées par type
+- ⏱️ Temps relatif formatté
+- 🔗 Actions et liens cliquables
+- 🗑️ Suppression individuelle ou globale
+
+#### 🧠 Système de Recommandations Intelligentes
+- ✅ **Composable useRecommendations.ts** (300+ lignes)
+- ✅ **9 stratégies de recommandations:**
+  - **getSimilarProducts()** - Produits similaires
+  - **getCartBasedRecommendations()** - Basé sur panier
+  - **getViewBasedRecommendations()** - Basé sur vues
+  - **getFavoriteBasedRecommendations()** - Basé sur favoris
+  - **getTrendingProducts()** - Tendances
+  - **getNewArrivals()** - Nouveautés
+  - **getBestSellers()** - Meilleures ventes
+  - **getSeasonalProducts()** - Produits de saison
+  - **getFrequentlyBoughtTogether()** - Souvent achetés ensemble
+  - **getCustomersAlsoViewed()** - Aussi consultés
+- ✅ **Recommandations personnalisées:**
+  - getPersonalizedRecommendations() - Combine 3 stratégies
+  - getForYou() - Pour vous (homepage)
+  - calculateScore() - Scoring avec contexte utilisateur
+- ✅ **Fallback intelligent:** Trending si pas assez de données
+
+**Composant ProductRecommendations.vue:**
+- 📱 2 layouts: grid et scroll horizontal
+- 👁️ Vue rapide intégrée
+- ❤️ Toggle favoris rapide
+- 🛒 Ajout panier direct
+- 🏷️ Badges (Bio, Nouveau, Raison recommandation)
+- ⭐ Ratings affichés
+- 📊 Stock status
+- 🔄 Chargement progressif (Load More)
+- 🔗 Lien "Voir tout" optionnel
+
+#### 💝 Listes de Souhaits Avancées
+- ✅ **Composable useWishlist.ts** (600+ lignes)
+- ✅ **Listes multiples:**
+  - createWishlist() - Créer liste personnalisée
+  - updateWishlist() - Modifier nom, description, couleur, icône
+  - deleteWishlist() - Supprimer (sauf défaut)
+  - Liste par défaut protégée
+- ✅ **Gestion items:**
+  - addToWishlist() - Ajouter avec priorité et notes
+  - removeFromWishlist() - Retirer
+  - moveItem() - Déplacer entre listes
+  - copyItem() - Copier entre listes
+  - updateItem() - Modifier priorité/notes
+- ✅ **Recherche et filtrage:**
+  - isInAnyWishlist() - Check présence
+  - isInWishlist() - Check liste spécifique
+  - getListsWithProduct() - Toutes listes avec produit
+  - getItemsByPriority() - Filtrer par priorité
+  - getHighPriorityItems() - Items haute priorité
+- ✅ **Organisation:**
+  - sortItems() - Tri: date/prix/nom/priorité
+  - clearWishlist() - Vider liste
+  - calculateTotalPrice() - Prix total
+- ✅ **Export et partage:**
+  - exportWishlist() - JSON
+  - exportAsCSV() - Format CSV
+  - downloadWishlist() - Télécharger fichier
+  - generateShareLink() - Lien public (si is_public)
+- ✅ **Métadonnées:**
+  - Priorité: low/medium/high
+  - Notes personnelles
+  - Couleur et icône personnalisables
+  - Public/Privé
+  - Timestamps created/updated
+
+#### 💰 Alertes de Prix Intelligentes
+- ✅ **Composable usePriceAlerts.ts** (500+ lignes)
+- ✅ **Création et gestion:**
+  - createAlert() - Créer alerte avec prix cible
+  - removeAlert() / removeAlertByProduct()
+  - getAlertByProduct() - Récupérer alerte
+  - hasActiveAlert() - Vérifier existence
+- ✅ **Surveillance automatique:**
+  - checkProductPrice() - Vérifier un produit
+  - checkAllPrices() - Vérifier toutes alertes
+  - startAutoCheck() - Monitoring auto (1h)
+  - Notification automatique si déclenchée
+- ✅ **Analyse:**
+  - getPriceDropPercentage() - % de réduction
+  - calculateSavings() - Économie réalisée
+  - getTotalSavings() - Économies totales
+  - getTriggeredAlerts() / getActiveAlerts()
+- ✅ **Organisation:**
+  - sortAlerts() - Tri: date/prix/nom/savings
+  - clearTriggered() / clearAll()
+  - formatTimeSince() - Temps relatif
+- ✅ **Export:**
+  - exportAsCSV() - Export complet
+  - downloadCSV() - Télécharger
+- ✅ **Persistance localStorage (90 jours)**
+- ✅ **Compteurs:**
+  - activeAlertsCount - Alertes actives
+  - triggeredAlertsCount - Alertes déclenchées
+
+### 📊 Métriques Version 1.6.0
+- **Fichiers créés:** 7 nouveaux composants/composables
+- **Lignes de code:** ~2,800
+- **Notifications:** 8 types + browser support
+- **Recommandations:** 9 stratégies + scoring
+- **Wishlists:** Multiples listes + export CSV/JSON
+- **Price Alerts:** Monitoring auto 1h + notifications
+
+### 🎯 Impact Utilisateur
+
+**Engagement:**
+- ✅ Notifications temps réel push et in-app
+- ✅ Recommandations personnalisées intelligentes
+- ✅ Listes souhaits organisables et partageables
+- ✅ Alertes prix automatiques
+
+**Intelligence:**
+- ✅ 9 stratégies de recommandations
+- ✅ Scoring contextuel produits
+- ✅ Monitoring prix automatique
+- ✅ Suggestions basées comportement
+
+**Organisation:**
+- ✅ Listes multiples avec couleurs
+- ✅ Priorités et notes sur items
+- ✅ Export CSV/JSON
+- ✅ Tri et filtrage avancés
+
+**Notifications:**
+- ✅ 8 types différents
+- ✅ 3 niveaux priorité
+- ✅ Browser notifications natives
+- ✅ Historique 30 jours
+
+### 🚀 Nouvelles Fonctionnalités en Action
+
+**Notifications:**
+```typescript
+const { notifyPriceDrop, notifyOrderUpdate } = useNotifications()
+
+// Notifier baisse de prix
+notifyPriceDrop('Tomates Bio', 5.0, 3.5, 123)
+
+// Notifier commande
+notifyOrderUpdate('12345', 'shipped', 'Votre commande est en route')
+```
+
+**Recommandations:**
+```typescript
+const { getPersonalizedRecommendations, getSimilarProducts } = useRecommendations()
+
+// Recommandations personnalisées
+const forYou = await getPersonalizedRecommendations(12)
+
+// Produits similaires
+const similar = await getSimilarProducts(productId, 6)
+```
+
+**Wishlist Avancée:**
+```typescript
+const { createWishlist, addToWishlist, exportAsCSV } = useWishlist()
+
+// Créer liste personnalisée
+const list = createWishlist('Produits Bio', {
+  description: 'Ma sélection bio',
+  color: '#10b981',
+  icon: '🌿',
+  is_public: true
+})
+
+// Ajouter avec priorité
+addToWishlist(product, list.id, {
+  priority: 'high',
+  notes: 'À acheter cette semaine'
+})
+
+// Exporter
+const csv = exportAsCSV(list.id)
+```
+
+**Alertes de Prix:**
+```typescript
+const { createAlert, getTotalSavings } = usePriceAlerts()
+
+// Créer alerte
+createAlert(product, 2.5) // Alerter si prix <= 2.5 TND
+
+// Économies totales
+const savings = getTotalSavings() // 47.50 TND économisés
+```
+
+---
+
 ## [1.5.0] - 2025-11-17
 
 ### 📱 PWA & Expérience d'Achat Avancée
