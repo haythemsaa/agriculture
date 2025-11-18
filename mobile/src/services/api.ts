@@ -308,4 +308,118 @@ export const loyaltyAPI = {
     api.post(`/loyalty/rewards/${rewardId}/redeem`),
 };
 
+// Referral Program endpoints
+export const referralAPI = {
+  generateCode: (customCode?: string) =>
+    api.post('/referrals/generate', { customCode }),
+
+  getMyCode: () =>
+    api.get('/referrals/my-code'),
+
+  validateCode: (code: string) =>
+    api.get(`/referrals/validate/${code}`),
+
+  getReferrals: () =>
+    api.get('/referrals/my-referrals'),
+
+  getRewards: () =>
+    api.get('/referrals/rewards'),
+
+  getStats: () =>
+    api.get('/referrals/stats'),
+
+  requestPayout: (amount: number, method: 'bank' | 'credit' | 'mobile') =>
+    api.post('/referrals/payout', { amount, method }),
+};
+
+// Bulk Ordering endpoints
+export const bulkOrderingAPI = {
+  getQuotes: () =>
+    api.get('/bulk-orders/quotes'),
+
+  createQuote: (data: any) =>
+    api.post('/bulk-orders/quotes', data),
+
+  submitQuote: (quoteId: string) =>
+    api.post(`/bulk-orders/quotes/${quoteId}/submit`),
+
+  acceptQuote: (quoteId: string) =>
+    api.post(`/bulk-orders/quotes/${quoteId}/accept`),
+
+  rejectQuote: (quoteId: string, reason: string) =>
+    api.post(`/bulk-orders/quotes/${quoteId}/reject`, { reason }),
+
+  sendNegotiation: (quoteId: string, message: string, proposedPrice?: number) =>
+    api.post(`/bulk-orders/quotes/${quoteId}/negotiate`, { message, proposedPrice }),
+
+  createRecurringOrder: (data: any) =>
+    api.post('/bulk-orders/recurring', data),
+
+  cancelRecurringOrder: (orderId: string) =>
+    api.post(`/bulk-orders/recurring/${orderId}/cancel`),
+
+  getStats: () =>
+    api.get('/bulk-orders/stats'),
+};
+
+// Subscriptions endpoints
+export const subscriptionsAPI = {
+  getAll: () =>
+    api.get('/subscriptions'),
+
+  create: (data: any) =>
+    api.post('/subscriptions', data),
+
+  updateProducts: (subscriptionId: string, products: any[]) =>
+    api.put(`/subscriptions/${subscriptionId}/products`, { products }),
+
+  updateFrequency: (subscriptionId: string, frequency: string, customSchedule?: any) =>
+    api.put(`/subscriptions/${subscriptionId}/frequency`, { frequency, customSchedule }),
+
+  pause: (subscriptionId: string, pausedUntil?: number) =>
+    api.post(`/subscriptions/${subscriptionId}/pause`, { pausedUntil }),
+
+  resume: (subscriptionId: string) =>
+    api.post(`/subscriptions/${subscriptionId}/resume`),
+
+  cancel: (subscriptionId: string, reason: string, immediate: boolean) =>
+    api.post(`/subscriptions/${subscriptionId}/cancel`, { reason, immediate }),
+
+  skipDelivery: (subscriptionId: string, reason?: string) =>
+    api.post(`/subscriptions/${subscriptionId}/skip-delivery`, { reason }),
+
+  getDeliveries: (subscriptionId?: string) =>
+    api.get('/subscriptions/deliveries', { params: { subscriptionId } }),
+
+  getStats: () =>
+    api.get('/subscriptions/stats'),
+};
+
+// Vendor Dashboard endpoints
+export const vendorAPI = {
+  getMetrics: (period: string) =>
+    api.get('/vendor/metrics', { params: { period } }),
+
+  getSalesHistory: (period: string) =>
+    api.get('/vendor/sales-history', { params: { period } }),
+
+  getTopProducts: (limit?: number) =>
+    api.get('/vendor/top-products', { params: { limit } }),
+
+  getTopCustomers: (limit?: number) =>
+    api.get('/vendor/top-customers', { params: { limit } }),
+
+  getInventoryAlerts: () =>
+    api.get('/vendor/inventory-alerts'),
+
+  getRecentOrders: (limit?: number) =>
+    api.get('/vendor/recent-orders', { params: { limit } }),
+
+  getRevenueBreakdown: () =>
+    api.get('/vendor/revenue-breakdown'),
+
+  getGeographicData: () =>
+    api.get('/vendor/geographic-data'),
+};
+
 export default api;
